@@ -41,6 +41,7 @@ class QuizUtils {
     static ArrayList<Integer> generateQuestion(ArrayList<Integer> remainingSampleIDs){
 
         // Shuffle the remaining sample ID's.
+        // In the beginning we have 11 samples (10 questions, the last question has just 2 possible answers)
         Collections.shuffle(remainingSampleIDs);
 
         ArrayList<Integer> answers = new ArrayList<>();

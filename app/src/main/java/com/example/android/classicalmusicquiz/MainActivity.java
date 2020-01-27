@@ -37,6 +37,7 @@ public class MainActivity extends AppCompatActivity {
 
         // Get the high and max score.
         int highScore = QuizUtils.getHighScore(this);
+        // we have 11 samples, maxScore = 10;
         int maxScore = Sample.getAllSampleIDs(this).size() - 1;
 
         // Set the high score text.
