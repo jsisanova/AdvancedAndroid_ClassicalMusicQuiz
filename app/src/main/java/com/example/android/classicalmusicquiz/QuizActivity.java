@@ -18,6 +18,8 @@ package com.example.android.classicalmusicquiz;
 
 import android.app.NotificationManager;
 import android.app.PendingIntent;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
@@ -55,6 +57,8 @@ import com.google.android.exoplayer2.util.Util;
 
 import java.util.ArrayList;
 
+// https://exoplayer.dev/hello-world.html
+// https://github.com/udacity/AdvancedAndroid_ClassicalMusicQuiz/compare/TMED.06-Exercise-AddMediaButtonReceiver...TMED.06-Solution-AddMediaButtonReceiver?expand=1
 public class QuizActivity extends AppCompatActivity implements View.OnClickListener, ExoPlayer.EventListener {
 
     private static final int CORRECT_ANSWER_DELAY_MILLIS = 1000;
@@ -69,7 +73,7 @@ public class QuizActivity extends AppCompatActivity implements View.OnClickListe
     private Button[] mButtons;
     private SimpleExoPlayer mExoPlayer;
     private SimpleExoPlayerView mPlayerView;
-    private MediaSessionCompat mMediaSession;
+    private static MediaSessionCompat mMediaSession;
     private PlaybackStateCompat.Builder mStateBuilder;
     private NotificationManager mNotificationManager;
 
@@ -190,7 +194,7 @@ public class QuizActivity extends AppCompatActivity implements View.OnClickListe
 
 
     /**
-     * Shows Media Style notification, with an action that depends on the current MediaSession
+     * Shows Media Style notification, with actions that depend on the current MediaSession
      * PlaybackState.
      * @param state The PlaybackState of the MediaSession.
      */
@@ -212,6 +216,8 @@ public class QuizActivity extends AppCompatActivity implements View.OnClickListe
                 icon, play_pause,
                 MediaButtonReceiver.buildMediaButtonPendingIntent(this,
                         PlaybackStateCompat.ACTION_PLAY_PAUSE));
+                // when we create broadcast pending intent for our notification actions, we use MediaButtonReceiver.buildMediaButtonPendingIntent class to create our media button actions.
+                // then we need to create broadcast receiver with an intent filter for the media button intent action (see below static class MediaReceiver extends BroadcastReceiver)
 
         NotificationCompat.Action restartAction = new android.support.v4.app.NotificationCompat
                 .Action(R.drawable.exo_controls_previous, getString(R.string.restart),
@@ -427,6 +433,23 @@ public class QuizActivity extends AppCompatActivity implements View.OnClickListe
         }
     }
 
-    // TODO (1): Create a static inner class that extends Broadcast Receiver and implement the onReceive() method.
-    //TODO (2): Call MediaButtonReceiver.handleIntent and pass in the incoming intent as well as the MediaSession object to forward the intent to the MediaSession.Callbacks.
+    // TODO (1): Create a static inner class that extends Broadcast Receiver and implements the onReceive() method.
+    /**
+     * Broadcast Receiver registered to receive the MEDIA_BUTTON intent coming from clients.
+     */
+    // when we create broadcast pending intent for our notification actions, we use MediaButtonReceiver.buildMediaButtonPendingIntent class to create our media button actions.
+    // then we need to create broadcast receiver with an intent filter for the media button intent action.
+    // With this we make sure that the intent is properly routed to proper callback (in MySessionCallback class)
+    // And our notification should now act as an external client & you can interact with notification actions & see how SimpleExoPlayerView changes it's state to match.
+    public static class MediaReceiver extends BroadcastReceiver {
+
+        public MediaReceiver() {
+        }
+
+        //TODO (2): Call MediaButtonReceiver.handleIntent and pass in the incoming intent as well as the MediaSession object to forward the intent to the MediaSession.Callbacks.
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            MediaButtonReceiver.handleIntent(mMediaSession, intent);
+        }
+    }
 }
